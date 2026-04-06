@@ -25,6 +25,15 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f9d7dec4-dabd-4920-8f7f-b617ef281da0"
+      }
+    },
+    "owner": "veltro-limited",
+    "plugins": [
+      "expo-font"
+    ]
   }
 }
