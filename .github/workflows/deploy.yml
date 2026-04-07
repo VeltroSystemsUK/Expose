@@ -1,0 +1,38 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npx expo export -p web
+        env:
+          EXPO_PUBLIC_GEMINI_API_KEY: ${{ secrets.EXPO_PUBLIC_GEMINI_API_KEY }}
+
+      - name: Vercel Actions
+        uses: nexterias/actions-vercel@v1.2.3
+        with:
+          token: ${{ secrets.VERCEL_TOKEN }}
+          project-id: prj_qJ0RHu26yd8kdjgaEpmVr0Dr0tXs
+          org-id: team_iWuqU5bzKmmm4yc7uijnhrlm
+          github-token: ${{ github.token }}
+          production: true
+          prebuilt: true
+          cwd: dist
