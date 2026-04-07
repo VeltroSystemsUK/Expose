@@ -174,16 +174,12 @@ export default function HomeScreen() {
             <Text style={styles.brand}>VELTRO</Text>
             <Text style={styles.brandSub}>EXPOSE</Text>
           </View>
-          <View style={styles.fcaBadge}>
-            <Ionicons name="shield-checkmark" size={9} color={colors.accent} />
-            <Text style={styles.fcaBadgeText}>FCA COMPLIANCE TOOL</Text>
-          </View>
         </Animated.View>
 
         {/* ── Hero statement ───────────────────────────────── */}
         <Animated.View style={[styles.hero, slideIn(heroAnim)]}>
           {/* Split title so stroke sits directly under COMMISSION */}
-          <Text style={[styles.heroTitle, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: spacing.sm }]}>Has your broker hidden</Text>
+          <Text style={[styles.heroTitle, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: spacing.sm }]}>We expose the hidden</Text>
           <View style={styles.heroAccentBlock}>
             <Text
               style={[styles.heroTitle, styles.heroAccent, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: 0 }]}
@@ -191,7 +187,7 @@ export default function HomeScreen() {
             >
               COMMISSION
             </Text>
-            {/* Paint stroke — grows left→right to the exact width of the word */}
+            {/* Paint stroke — grows left→right to the full width of the word */}
             <View style={styles.heroStrokeTilt}>
               <Animated.View style={[styles.heroStrokeReveal, {
                 width: heroUnderlineAnim.interpolate({ inputRange: [0, 1], outputRange: [0, commissionWidth] }),
@@ -201,7 +197,7 @@ export default function HomeScreen() {
               </Animated.View>
             </View>
           </View>
-          <Text style={[styles.heroTitle, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: spacing.md }]}>payments from you?</Text>
+          <Text style={[styles.heroTitle, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: spacing.md }]}>in Finance Agreements!</Text>
           <Text style={styles.heroSub}>
             Following the UK Supreme Court ruling in{' '}
             <Text style={styles.heroSubBold}>Johnson v Firstrand Bank Ltd</Text>
