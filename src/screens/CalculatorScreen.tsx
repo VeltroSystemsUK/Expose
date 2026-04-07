@@ -10,6 +10,7 @@ import {
   Platform,
   Linking,
   Alert,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -114,6 +115,8 @@ const rrStyles = StyleSheet.create({
 export default function CalculatorScreen() {
   const navigation = useNavigation<Nav>();
   const { calcInput, setCalcInput, calcResult, setCalcResult, brokerInvolved, setBrokerInvolved } = useExposeStore();
+  const { width } = useWindowDimensions();
+  const isMobile = width < 480;
 
   // Form state
   const [selectedLender, setSelectedLender] = useState<LenderProfile | null>(
@@ -177,9 +180,9 @@ export default function CalculatorScreen() {
               If a broker or introducer arranged this finance on your behalf, we can assess hidden commission.
               If you dealt directly with the lender, we'll focus on excessive charges instead.
             </Text>
-            <View style={styles.brokerOptions}>
+            <View style={[styles.brokerOptions, isMobile && { flexDirection: 'column' }]}>
               <TouchableOpacity
-                style={[styles.brokerOption, brokerInvolved && styles.brokerOptionYes]}
+                style={[styles.brokerOption, brokerInvolved && styles.brokerOptionYes, isMobile && { flex: 0 }]}
                 onPress={() => setBrokerInvolved(true)}
                 activeOpacity={0.7}
               >
@@ -198,7 +201,7 @@ export default function CalculatorScreen() {
                 </View>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.brokerOption, !brokerInvolved && styles.brokerOptionNo]}
+                style={[styles.brokerOption, !brokerInvolved && styles.brokerOptionNo, isMobile && { flex: 0 }]}
                 onPress={() => setBrokerInvolved(false)}
                 activeOpacity={0.7}
               >

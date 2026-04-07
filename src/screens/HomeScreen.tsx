@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { colors, spacing, radius, typography } from '../theme';
@@ -65,7 +67,6 @@ export default function HomeScreen() {
   const [commissionWidth, setCommissionWidth] = useState(0);
 
   const { width } = useWindowDimensions();
-  // Responsive scale: value for small phones (<400), medium phones (<600), desktop
   const rs = (sm: number, md: number, lg: number = md) =>
     width < 400 ? sm : width < 600 ? md : lg;
 
@@ -84,6 +85,7 @@ export default function HomeScreen() {
   const floatAnim          = useRef(new Animated.Value(0)).current;
   const rotateAnim         = useRef(new Animated.Value(0)).current;
   const heroUnderlineAnim  = useRef(new Animated.Value(0)).current;
+  const chromaAnim         = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     // Staggered entrance
@@ -112,6 +114,11 @@ export default function HomeScreen() {
         Animated.timing(scanLineAnim, { toValue: 0, duration: 0,    useNativeDriver: true }),
         Animated.delay(600),
       ])
+    ).start();
+
+    // Chroma shift on COMMISSIONS gradient
+    Animated.loop(
+      Animated.timing(chromaAnim, { toValue: 1, duration: 3200, easing: Easing.linear, useNativeDriver: false })
     ).start();
 
     // Hero underline paint stroke — delayed left-to-right reveal
@@ -178,16 +185,50 @@ export default function HomeScreen() {
 
         {/* ── Hero statement ───────────────────────────────── */}
         <Animated.View style={[styles.hero, slideIn(heroAnim)]}>
-          {/* Split title so stroke sits directly under COMMISSION */}
-          <Text style={[styles.heroTitle, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: spacing.sm }]}>We expose the hidden</Text>
-          <View style={styles.heroAccentBlock}>
-            <Text
-              style={[styles.heroTitle, styles.heroAccent, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: 0 }]}
-              onLayout={e => setCommissionWidth(e.nativeEvent.layout.width)}
+
+          {/* Line 1: "Hidden." */}
+          <Text style={[styles.heroTitle, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: spacing.sm }]}>
+            Hidden.
+          </Text>
+
+          {/* Line 2: "COMMISSIONS." — chromaphase gradient */}
+          <View
+            style={styles.heroAccentBlock}
+            onLayout={e => setCommissionWidth(e.nativeEvent.layout.width)}
+          >
+            <MaskedView
+              maskElement={
+                <Text style={[
+                  styles.heroTitle,
+                  styles.heroAccent,
+                  { fontSize: rs(32, 44, 58), lineHeight: rs(36, 48, 64), marginBottom: 0, backgroundColor: 'transparent' },
+                ]}>
+                  COMMISSIONS.
+                </Text>
+              }
             >
-              COMMISSION
-            </Text>
-            {/* Paint stroke — grows left→right to the full width of the word */}
+              <Animated.View
+                style={{
+                  width: commissionWidth * 3 || 900,
+                  height: rs(40, 52, 68),
+                  transform: [{
+                    translateX: chromaAnim.interpolate({
+                      inputRange:  [0, 1],
+                      outputRange: [0, -(commissionWidth * 2 || 600)],
+                    }),
+                  }],
+                }}
+              >
+                <LinearGradient
+                  colors={['#ff2d55', '#ff6a00', '#ffcc00', '#00e5ff', '#a259ff', '#ff2d55', '#ff6a00', '#ffcc00']}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={{ flex: 1 }}
+                />
+              </Animated.View>
+            </MaskedView>
+
+            {/* Paint stroke underline */}
             <View style={styles.heroStrokeTilt}>
               <Animated.View style={[styles.heroStrokeReveal, {
                 width: heroUnderlineAnim.interpolate({ inputRange: [0, 1], outputRange: [0, commissionWidth] }),
@@ -197,12 +238,19 @@ export default function HomeScreen() {
               </Animated.View>
             </View>
           </View>
-          <Text style={[styles.heroTitle, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: spacing.md }]}>in Finance Agreements!</Text>
-          <Text style={styles.heroSub}>
-            Following the UK Supreme Court ruling in{' '}
-            <Text style={styles.heroSubBold}>Johnson v Firstrand Bank Ltd</Text>
-            , UK businesses can now legally challenge undisclosed broker fees buried in their finance agreements.
+
+          {/* Line 3: "Exposed." */}
+          <Text style={[styles.heroTitle, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: spacing.md }]}>
+            Exposed.
           </Text>
+
+          {/* Subhead */}
+          <Text style={styles.heroSub}>
+            Find out what's buried in your finance agreement.{' '}
+            <Text style={styles.heroSubBold}>Johnson v Firstrand Bank Ltd</Text>
+            {' '}confirmed: undisclosed broker commissions are unlawful.
+          </Text>
+
         </Animated.View>
 
         {/* ── Animated insight panel ───────────────────────── */}
@@ -225,7 +273,7 @@ export default function HomeScreen() {
           {/* Background watermark glyph — floats gently, symbol changes per stat */}
           <Animated.Text style={[
             styles.panelGlyph,
-            { color: currentTheme.glyph, transform: [{ translateY: floatInterp }], fontSize: rs(72, 96, 120), lineHeight: rs(72, 96, 120) },
+            { color: currentTheme.glyph, transform: [{ translateY: floatInterp }] },
           ]}>
             {currentTheme.symbol}
           </Animated.Text>
@@ -239,7 +287,7 @@ export default function HomeScreen() {
           </View>
 
           {/* Stat value */}
-          <Animated.Text style={[styles.insightValue, { opacity: statFadeAnim, fontSize: rs(38, 46, 56), lineHeight: rs(42, 50, 60) }]}>
+          <Animated.Text style={[styles.insightValue, { opacity: statFadeAnim }]}>
             {currentStat.value}
           </Animated.Text>
 
@@ -442,7 +490,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   safe:    { flex: 1, backgroundColor: colors.black },
   scroll:  { flex: 1 },
-  content: { paddingHorizontal: spacing.page, paddingBottom: 48, maxWidth: 600, alignSelf: 'center', width: '100%' },
+  content: { paddingHorizontal: spacing.page, paddingBottom: 48 },
 
   // Logo
   logoRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.xl },
@@ -521,9 +569,9 @@ const styles = StyleSheet.create({
   },
   panelGlyph: {
     position: 'absolute', bottom: -16, right: 16,
-    fontSize: 96, fontWeight: typography.black,
+    fontSize: 120, fontWeight: typography.black,
     color: 'rgba(205,254,0,0.04)',
-    lineHeight: 96,
+    lineHeight: 120,
   },
   // Live badge
   liveBadge: {
@@ -543,8 +591,8 @@ const styles = StyleSheet.create({
   liveBadgeYou:  { fontWeight: typography.black, color: colors.accent },
   // Stat
   insightValue: {
-    fontSize: 46, fontWeight: typography.black,
-    color: colors.text, lineHeight: 50,
+    fontSize: 56, fontWeight: typography.black,
+    color: colors.text, lineHeight: 60,
     marginBottom: spacing.sm,
   },
   insightProgressBg: {
