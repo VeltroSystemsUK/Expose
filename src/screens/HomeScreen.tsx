@@ -182,7 +182,6 @@ export default function HomeScreen() {
 
         {/* ── Hero statement ───────────────────────────────── */}
         <Animated.View style={[styles.hero, slideIn(heroAnim)]}>
-          <Text style={styles.heroEyebrow}>LANDMARK 2024 RULING</Text>
           {/* Split title so stroke sits directly under COMMISSION */}
           <Text style={[styles.heroTitle, { fontSize: rs(28, 38, 50), lineHeight: rs(32, 42, 56), marginBottom: spacing.sm }]}>Has your broker hidden</Text>
           <View style={styles.heroAccentBlock}>
