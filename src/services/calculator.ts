@@ -53,7 +53,7 @@ const TIER_RATES: Record<CommissionTier, TierRates> = {
   low:        [1.0,  4.0],
   medium:     [4.0,  10.0],
   high:       [8.0,  15.0],
-  very_high:  [12.0, 20.0],
+  very_high:  [10.0, 15.0],
 };
 
 function getCommissionTier(spread: number): CommissionTier {
@@ -108,7 +108,6 @@ export function calculate(input: CalcInput): CalcResult {
     amountBorrowed,
     monthlyPayment,
     termMonths,
-    lenderId,
     agreementType,
     quotedRate,
     disclosureStatus,
@@ -130,22 +129,16 @@ export function calculate(input: CalcInput): CalcResult {
     }
   }
 
-  // 3. Lender buy rate floor (what the broker paid)
-  const lender = lenderId ? getLenderById(lenderId) : undefined;
-  const isMCA = lender?.isMCA ?? agreementType === 'mca';
-  const buyRateFloor = lender
-    ? lender.buyRateMin
-    : MARKET_AVERAGE_BUY_RATES[agreementType as AgreementType] ?? 10;
+  // 3. Lender buy rate floor (use market average since no specific lender)
+  const isMCA = agreementType === 'mca';
+  const buyRateFloor = MARKET_AVERAGE_BUY_RATES[agreementType as AgreementType] ?? 10;
 
   // 4. Rate spread = the broker's markup above their cost of funds
   const spread = Math.max(0, actualAPR - buyRateFloor);
 
   // 5. Commission estimate based on spread tier
   const tier = getCommissionTier(spread);
-  const [rateMin, rateMaxRaw] = TIER_RATES[tier];
-  const rateMax = lender
-    ? Math.min(rateMaxRaw, lender.maxCommission)
-    : rateMaxRaw;
+  const [rateMin, rateMax] = TIER_RATES[tier];
 
   const commissionEstimate: CommissionEstimate = {
     min: Math.round(amountBorrowed * rateMin / 100),

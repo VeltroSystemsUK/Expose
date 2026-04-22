@@ -31,7 +31,7 @@ interface ExposeStore {
 
 const defaultCalcInput: CalcInput = {
   agreementType: 'business_loan',
-  lenderId: null,
+  lenderName: '',
   brokerName: '',
   amountBorrowed: 0,
   monthlyPayment: 0,

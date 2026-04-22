@@ -18,12 +18,10 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { colors, spacing, radius, typography } from '../theme';
-import { DisclosureStatus, LenderProfile, RootStackParamList, ClaimStrength } from '../types';
+import { DisclosureStatus, RootStackParamList, ClaimStrength } from '../types';
 import { useExposeStore } from '../store/useExposeStore';
 import { calculate } from '../services/calculator';
 import AgreementTypeSelector from '../components/AgreementTypeSelector';
-import LenderPicker from '../components/LenderPicker';
-import { getLenderById } from '../data/lenders';
 
 type Nav = NativeStackNavigationProp<RootStackParamList>;
 
@@ -119,9 +117,7 @@ export default function CalculatorScreen() {
   const isMobile = width < 480;
 
   // Form state
-  const [selectedLender, setSelectedLender] = useState<LenderProfile | null>(
-    calcInput.lenderId ? (getLenderById(calcInput.lenderId) ?? null) : null,
-  );
+  const [selectedLender, setSelectedLender] = useState(calcInput.lenderName ?? '');
   const [brokerName, setBrokerName] = useState(calcInput.brokerName ?? '');
   const [borrowed, setBorrowed] = useState(calcInput.amountBorrowed > 0 ? String(calcInput.amountBorrowed) : '');
   const [monthly, setMonthly] = useState(calcInput.monthlyPayment > 0 ? String(calcInput.monthlyPayment) : '');
@@ -135,7 +131,7 @@ export default function CalculatorScreen() {
   function recalculate() {
     const input = {
       ...calcInput,
-      lenderId: selectedLender?.id ?? null,
+      lenderName: selectedLender.trim(),
       brokerName: brokerName.trim(),
       amountBorrowed: parseFloat(borrowed) || 0,
       monthlyPayment: parseFloat(monthly) || 0,
@@ -238,23 +234,15 @@ export default function CalculatorScreen() {
             onSelect={(t) => { setCalcInput({ agreementType: t }); setSelectedLender(null); }}
           />
 
-          {/* ── Lender ── */}
+          {/* ── Lender name ── */}
           <SectionLabel>LENDER</SectionLabel>
-          <LenderPicker
-            selected={selectedLender}
-            agreementType={calcInput.agreementType}
-            onSelect={setSelectedLender}
+          <TextInput
+            style={styles.input}
+            value={selectedLender}
+            onChangeText={setSelectedLender}
+            placeholder="Enter lender name..."
+            placeholderTextColor={colors.textDim}
           />
-          {selectedLender && (
-            <View style={styles.lenderInfo}>
-              <Ionicons name="information-circle-outline" size={13} color={colors.textDim} />
-              <Text style={styles.lenderInfoText}>
-                Typical rate {selectedLender.buyRateMin}–{selectedLender.buyRateMax}%
-                {brokerInvolved ? ` · Max broker commission up to ${selectedLender.maxCommission}% of deal value` : ''}
-                {selectedLender.fcaRef ? ` · FCA ${selectedLender.fcaRef}` : ''}
-              </Text>
-            </View>
-          )}
 
           {/* ── Broker name ── */}
           {brokerInvolved && (
@@ -423,7 +411,7 @@ export default function CalculatorScreen() {
                     <ResultRow
                       label="True APR on this agreement"
                       value={fmtAPR(result.actualAPR)}
-                      sub={selectedLender ? `${selectedLender.name} typical buy rate: ${selectedLender.buyRateMin}–${selectedLender.buyRateMax}%` : undefined}
+                      sub={selectedLender ? `Typical market buy rate for ${selectedLender}` : undefined}
                     />
                     {calcInput.quotedRate != null && calcInput.quotedRate > 0 && (
                       <ResultRow
@@ -448,12 +436,9 @@ export default function CalculatorScreen() {
                           {selectedLender ? 'Lender buy rate (min)' : 'Est. market buy rate'}
                         </Text>
                         <Text style={styles.spreadValue}>
-                          {selectedLender
-                            ? fmtAPR(selectedLender.buyRateMin)
-                            : fmtAPR(result.commissionEstimate.spread > 0
-                                ? result.actualAPR - result.commissionEstimate.spread
-                                : 0)
-                          }
+                          {fmtAPR(result.commissionEstimate.spread > 0
+                            ? result.actualAPR - result.commissionEstimate.spread
+                            : 0)}
                         </Text>
                       </View>
                       <Ionicons name="arrow-forward" size={16} color={colors.textDim} style={{ marginTop: 18 }} />
@@ -579,7 +564,6 @@ export default function CalculatorScreen() {
                           color="#00B67A"
                           onPress={() => openLink(LINKS.trustpilot(
                             brokerName.trim(),
-                            selectedLender?.trustpilotSlug,
                           ))}
                         />
                         <ReportButton
@@ -589,7 +573,6 @@ export default function CalculatorScreen() {
                           color="#FC0"
                           onPress={() => openLink(LINKS.feefo(
                             brokerName.trim(),
-                            selectedLender?.feefoSlug,
                           ))}
                         />
                       </>

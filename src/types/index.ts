@@ -82,7 +82,7 @@ export interface CommissionEstimate {
 
 export interface CalcInput {
   agreementType: AgreementType;
-  lenderId: string | null;
+  lenderName: string;
   brokerName: string;
   amountBorrowed: number;
   monthlyPayment: number;

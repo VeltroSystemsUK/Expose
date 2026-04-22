@@ -66,9 +66,10 @@ export default function HomeScreen() {
   const [statIndex, setStatIndex] = useState(0);
   const [commissionWidth, setCommissionWidth] = useState(0);
 
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const rs = (sm: number, md: number, lg: number = md) =>
     width < 400 ? sm : width < 600 ? md : lg;
+  const isMobile = width < 480;
 
   // Entrance animations
   const headerAnim = useRef(new Animated.Value(0)).current;
@@ -147,7 +148,7 @@ export default function HomeScreen() {
         setStatIndex(i => (i + 1) % ROTATING_STATS.length);
         Animated.timing(statFadeAnim, { toValue: 1, duration: 350, useNativeDriver: true }).start();
       });
-    }, 3800);
+    }, 4200);
 
     return () => clearInterval(timer);
   }, []);
@@ -492,20 +493,20 @@ const styles = StyleSheet.create({
   scroll:  { flex: 1 },
   content: { paddingHorizontal: spacing.page, paddingBottom: 48 },
 
-  // Logo
-  logoRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.xl },
+  // Logo - responsive
+  logoRow:      { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg },
   logoTextRow:  { flexDirection: 'row', alignItems: 'baseline', gap: 5 },
-  brand:        { fontSize: typography.xl, fontWeight: typography.black, color: colors.text, letterSpacing: 2 },
-  brandSub:     { fontSize: typography.xl, fontWeight: typography.black, color: colors.accent, letterSpacing: 2 },
+  brand:        { fontSize: typography.lg, fontWeight: typography.black, color: colors.text, letterSpacing: 2 },
+  brandSub:     { fontSize: typography.lg, fontWeight: typography.black, color: colors.accent, letterSpacing: 2 },
   fcaBadge:     { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: colors.accentSoft, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: 4, borderWidth: 1, borderColor: colors.accentBorder },
   fcaBadgeText: { fontSize: 8, fontWeight: typography.bold, color: colors.accent, letterSpacing: 1 },
 
-  // Hero
-  hero:        { marginTop: spacing.xxl, marginBottom: spacing.lg },
+  // Hero - responsive sizing
+  hero:        { marginTop: spacing.xl, marginBottom: spacing.md },
   heroEyebrow: { fontSize: typography.xs, color: colors.accent, fontWeight: typography.semibold, letterSpacing: 1.5, marginBottom: spacing.sm },
-  heroTitle:   { fontSize: 38, fontWeight: typography.black, color: colors.text, lineHeight: 42 },
+  heroTitle:   { fontSize: 32, fontWeight: typography.black, color: colors.text, lineHeight: 36 },
   heroAccent:  { color: colors.accent },
-  heroSub:     { fontSize: typography.base, color: colors.textMuted, lineHeight: 20 },
+  heroSub:     { fontSize: typography.sm, color: colors.textMuted, lineHeight: 18 },
   heroSubBold: { color: colors.text, fontWeight: typography.medium },
 
   // COMMISSION paint-stroke underline
@@ -539,15 +540,15 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
 
-  // Animated insight panel
+  // Animated insight panel - responsive height
   insightPanel: {
-    minHeight: 220,
+    minHeight: 200,
     backgroundColor: colors.surface2,
-    borderRadius: radius.xl,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.accentBorder,
-    padding: spacing.xxl,
-    marginBottom: spacing.xxl,
+    padding: spacing.lg,
+    marginBottom: spacing.xl,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -622,18 +623,18 @@ const styles = StyleSheet.create({
   stepTitle:    { fontSize: typography.md, fontWeight: typography.bold, color: colors.text, marginBottom: 4 },
   stepDesc:     { fontSize: typography.sm, color: colors.textMuted, lineHeight: 17 },
 
-  // Cards shared
-  card:           { borderRadius: radius.lg, padding: spacing.xl, borderWidth: 1, overflow: 'hidden' },
+  // Cards shared - responsive padding
+  card:           { borderRadius: radius.lg, padding: spacing.lg, borderWidth: 1, overflow: 'hidden' },
   cardPrimary:    { backgroundColor: colors.surface2, borderColor: colors.accentBorder },
   cardSecondary:  { backgroundColor: colors.surface2, borderColor: colors.border },
-  cardTopRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.lg },
+  cardTopRow:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: spacing.md },
   modeBadge:      { backgroundColor: colors.accentSoft, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: 3 },
   modeBadgeText:  { fontSize: typography.xs, color: colors.accent, fontWeight: typography.semibold, letterSpacing: 1 },
   modeBadgeMuted: { backgroundColor: colors.surface3 },
-  cardIconCircle:      { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
+  cardIconCircle:      { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' },
   cardIconCircleMuted: { backgroundColor: colors.surface3, borderWidth: 1, borderColor: colors.border },
-  cardTitle: { fontSize: typography.xxl, fontWeight: typography.black, color: colors.text, lineHeight: 34, marginBottom: spacing.sm },
-  cardDesc:  { fontSize: typography.sm, color: colors.textMuted, lineHeight: 18, marginBottom: spacing.lg },
+  cardTitle: { fontSize: typography.xl, fontWeight: typography.black, color: colors.text, lineHeight: 30, marginBottom: spacing.xs },
+  cardDesc:  { fontSize: typography.sm, color: colors.textMuted, lineHeight: 17, marginBottom: spacing.md },
   cardCta:   { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginTop: spacing.sm },
   cardCtaText: { fontSize: typography.xs, color: colors.accent, fontWeight: typography.bold, letterSpacing: 1.2 },
 
