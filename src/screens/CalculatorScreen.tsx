@@ -536,7 +536,19 @@ export default function CalculatorScreen() {
                   </Text>
                   <TouchableOpacity
                     style={styles.ctaBtn}
-                    onPress={() => navigation.navigate('LeadStep1')}
+                    onPress={() => {
+                      const subject = encodeURIComponent('New Enquiry - Expose Calculator');
+                      const body = encodeURIComponent(
+                        `Hi Shaun,\n\nI would like a free review of my finance agreement.\n\n` +
+                        `Loan Amount: £${borrowed}\n` +
+                        `Monthly Payment: £${monthly}\n` +
+                        `Term: ${term} months\n` +
+                        `Broker: ${brokerName || 'N/A'}\n` +
+                        `Calculated APR: ${fmtAPR(result.actualAPR)}\n` +
+                        `Potential Claim: Up to £${fmt(result.potentialClaimValue)}\n`
+                      );
+                      Linking.openURL(`mailto:shaun@veltro.co.uk?subject=${subject}&body=${body}`);
+                    }}
                     activeOpacity={0.85}
                   >
                     <Text style={styles.ctaBtnText}>GET FREE REVIEW</Text>
